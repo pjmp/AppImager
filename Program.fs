@@ -10,12 +10,12 @@ type Link = { ``type``: string; url: string }
 type Item =
     { name: string
       description: string
-      categories: string List
-      authors: Author List
+      categories: List<string>
+      authors: List<Author>
       license: Option<string>
-      links: Link List
-      icons: string List
-      screenshots: string List }
+      links: List<Link>
+      icons: List<string>
+      screenshots: List<string> }
 
 let getAppDirectory () =
     Path.Join(Environment.GetEnvironmentVariable("HOME"), ".cache", "AppImager")
@@ -36,40 +36,34 @@ let getData () =
     match File.Exists(getAppDBPath ()) with
     | true -> ()
     | false ->
-        async {
-            use client = new Net.Http.HttpClient()
+        use client = new Net.Http.HttpClient()
 
-            let! response =
-                client.GetStringAsync("https://appimage.github.io/feed.json")
-                |> Async.AwaitTask
+        task {
+            let! response = client.GetStringAsync("https://appimage.github.io/feed.json")
 
             File.WriteAllTextAsync(getAppDBPath (), response)
-            |> Async.AwaitTask
             |> ignore
         }
+        |> Async.AwaitTask
         |> Async.RunSynchronously
 
 [<EntryPoint>]
 let main args =
     try
-        let cmd = Cli.runApp args
-        
-        match cmd with
-        | Some(r) ->
-            match r with
-            | Cli.Search (query) -> printfn $"Searching: {query}"
-            | Cli.Install (apps) -> printfn $"install: {apps}"
-            | Cli.Uninstall (apps) -> printfn $"uninstall: {apps}"
-            | Cli.List -> printfn "listing.."
-            | Cli.Version -> printfn "version"
-        | None -> ()
+        match Cli.runApp args with
+        | Some cmd ->
+            match cmd with
+            | Cli.Search query -> Cli.install query
+            | Cli.Install apps -> Cli.install apps
+            | Cli.Uninstall apps -> Cli.uninstall apps
+            | Cli.List -> Cli.list
+            | Cli.Version -> printfn "v0.1"
+        | None -> exit 1
 
         initApp ()
 
         getData ()
-
-        printfn "Bye.."
     with
-    | e -> printfn $"{e.Message}"
+    | err -> eprintfn $"{err.Message}"
 
     0

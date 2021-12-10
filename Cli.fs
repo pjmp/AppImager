@@ -1,6 +1,7 @@
 module AppImager.Cli
 
 open System
+open System.IO
 
 open Argu
 
@@ -15,13 +16,13 @@ type Arguments =
     interface IArgParserTemplate with
         member this.Usage =
             match this with
-            | List -> "list installed AppImages"
-            | Version -> "version"
-            | Install (_) -> "install"
-            | Uninstall (_) -> "uninstall"
-            | Search (_) -> "search"
+            | List -> "list installed AppImages."
+            | Version -> "displays version information."
+            | Install _ -> "install the app."
+            | Uninstall _ -> "uninstall the given app."
+            | Search _ -> "search app for the given string."
 
-let runApp (argv: string []) =
+let runApp argv =
     let errorHandler =
         ProcessExiter(
             colorizer =
@@ -35,13 +36,42 @@ let runApp (argv: string []) =
             errorHandler = errorHandler,
             helpTextMessage = "Tiny cli to manage AppImage packaged apps"
         )
-    
-    let results = parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
-    
+
+    let results =
+        parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
+
     let cmd = results.GetAllResults()
-    
+
     if cmd.IsEmpty then
-        printfn "%A" <| parser.PrintUsage()
+        printfn $"{parser.PrintUsage()}"
         None
     else
         Some(cmd.Head)
+
+
+let uninstall apps =
+    let notRemoved =
+        List.fold
+            (fun acc curr ->
+                if File.Exists(curr) then
+                    File.Delete(curr)
+                    acc
+                else
+                    List.append acc [ curr ])
+            []
+            apps
+
+    if notRemoved.IsEmpty then
+        eprintfn $"""Unable to remove: {notRemoved |> String.concat ", "}"""
+
+let install apps =
+    //
+    ()
+
+let list =
+    //
+    ()
+
+let search query =
+    //
+    ()
