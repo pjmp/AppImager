@@ -50,26 +50,38 @@ let runApp argv =
 
 
 let uninstall apps =
-    let notRemoved =
-        List.fold
-            (fun acc curr ->
-                if File.Exists(curr) then
-                    File.Delete(curr)
-                    acc
-                else
-                    List.append acc [ curr ])
-            []
-            apps
+    let total =
+        ({| NotRemoved = []; NotExist = [] |}, apps)
+        ||> List.fold
+                (fun acc curr ->
+                    if File.Exists(curr) then
+                        try
+                            File.Delete(curr)
+                            acc
+                        with
+                        | _ ->
+                            {| acc with
+                                   NotRemoved = curr :: acc.NotRemoved |}
 
-    if notRemoved.IsEmpty then
-        eprintfn $"""Unable to remove: {notRemoved |> String.concat ", "}"""
+                    else
+                        {| acc with
+                               NotExist = curr :: acc.NotExist |})
+
+    if not total.NotRemoved.IsEmpty then
+        eprintfn $"""Unable to remove: {total.NotExist |> String.concat ", "}"""
+
+    if not total.NotExist.IsEmpty then
+        eprintfn $"""Unable to remove: {total.NotExist |> String.concat ", "}"""
 
 let install apps =
     //
     ()
 
 let list =
-    //
+    Directory.GetFiles(Utils.AppBinDirectory)
+    |> Array.map Path.GetFileName
+    |> Array.iter (fun bin -> printfn $"{bin}")
+
     ()
 
 let search query =

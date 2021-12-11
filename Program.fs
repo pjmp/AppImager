@@ -17,23 +17,20 @@ type Item =
       icons: List<string>
       screenshots: List<string> }
 
-let getAppDirectory () =
-    Path.Join(Environment.GetEnvironmentVariable("HOME"), ".cache", "AppImager")
-
-let getAppDBPath () =
-    Path.Join(getAppDirectory (), "db.json")
-
 let rec initApp () =
-    let dir = getAppDirectory ()
+    let dirs =
+        [ Utils.AppDirectory
+          Utils.AppDBDirectory
+          Utils.AppBinDirectory ]
 
-    match Directory.Exists(dir) with
+    match List.forall Directory.Exists dirs with
     | true -> ()
     | false ->
-        Directory.CreateDirectory(dir) |> ignore
+        List.iter (fun dir -> Directory.CreateDirectory(dir) |> ignore) dirs
         initApp ()
 
 let getData () =
-    match File.Exists(getAppDBPath ()) with
+    match File.Exists(Utils.AppDBFile) with
     | true -> ()
     | false ->
         use client = new Net.Http.HttpClient()
@@ -41,8 +38,7 @@ let getData () =
         task {
             let! response = client.GetStringAsync("https://appimage.github.io/feed.json")
 
-            File.WriteAllTextAsync(getAppDBPath (), response)
-            |> ignore
+            File.WriteAllText(Utils.AppDBFile, response)
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously
@@ -57,7 +53,7 @@ let main args =
             | Cli.Install apps -> Cli.install apps
             | Cli.Uninstall apps -> Cli.uninstall apps
             | Cli.List -> Cli.list
-            | Cli.Version -> printfn "v0.1"
+            | Cli.Version -> printfn "v0.1.0"
         | None -> exit 1
 
         initApp ()

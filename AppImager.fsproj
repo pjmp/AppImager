@@ -4,16 +4,21 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>AppImager</RootNamespace>
+        <PackageId>AppImager</PackageId>
+        <Version>0.1.0</Version>
+        <Authors>pmagar</Authors>
+        <Description>Tiny cli to manage AppImage packaged apps</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Cli.fs"/>
-        <Compile Include="Program.fs"/>
+        <Compile Include="Utils.fs" />
+        <Compile Include="Cli.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Argu" Version="6.1.1"/>
-        <PackageReference Include="Directories.Net" Version="1.0.0"/>
+        <PackageReference Include="Argu" Version="6.1.1" />
     </ItemGroup>
 
 </Project>
