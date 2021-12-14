@@ -1,16 +1,15 @@
 module AppImager.Cli
 
 open System
-open System.IO
 
 open Argu
 
 [<NoAppSettings>]
 type Arguments =
     | [<AltCommandLine("-l"); Unique>] List
+    | [<AltCommandLine("-v"); Unique>] Version
     | [<AltCommandLine("-i"); Unique>] Install of List<string>
     | [<AltCommandLine("-u"); Unique>] Uninstall of List<string>
-    | [<AltCommandLine("-v"); Unique>] Version
     | [<AltCommandLine("-s"); EqualsAssignmentOrSpaced; Unique>] Search of string
 
     interface IArgParserTemplate with
@@ -47,43 +46,3 @@ let runApp argv =
         None
     else
         Some(cmd.Head)
-
-
-let uninstall apps =
-    let total =
-        ({| NotRemoved = []; NotExist = [] |}, apps)
-        ||> List.fold
-                (fun acc curr ->
-                    if File.Exists(curr) then
-                        try
-                            File.Delete(curr)
-                            acc
-                        with
-                        | _ ->
-                            {| acc with
-                                   NotRemoved = curr :: acc.NotRemoved |}
-
-                    else
-                        {| acc with
-                               NotExist = curr :: acc.NotExist |})
-
-    if not total.NotRemoved.IsEmpty then
-        eprintfn $"""Unable to remove: {total.NotExist |> String.concat ", "}"""
-
-    if not total.NotExist.IsEmpty then
-        eprintfn $"""Unable to remove: {total.NotExist |> String.concat ", "}"""
-
-let install apps =
-    //
-    ()
-
-let list =
-    Directory.GetFiles(Utils.AppBinDirectory)
-    |> Array.map Path.GetFileName
-    |> Array.iter (fun bin -> printfn $"{bin}")
-
-    ()
-
-let search query =
-    //
-    ()

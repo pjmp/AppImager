@@ -9,6 +9,7 @@ bin
 *.exe
 !.paket/paket.bootstrapper.exe
 .ionide/
+.config
 
 # IDEs
 .vscode

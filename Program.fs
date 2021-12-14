@@ -3,21 +3,7 @@
 open System
 open System.IO
 
-type Author = { name: string; url: string }
-
-type Link = { ``type``: string; url: string }
-
-type Item =
-    { name: string
-      description: string
-      categories: List<string>
-      authors: List<Author>
-      license: Option<string>
-      links: List<Link>
-      icons: List<string>
-      screenshots: List<string> }
-
-let rec initApp () =
+let initApp () =
     let dirs =
         [ Utils.AppDirectory
           Utils.AppDBDirectory
@@ -27,7 +13,7 @@ let rec initApp () =
     | true -> ()
     | false ->
         List.iter (fun dir -> Directory.CreateDirectory(dir) |> ignore) dirs
-        initApp ()
+        ()
 
 let getData () =
     match File.Exists(Utils.AppDBFile) with
@@ -49,17 +35,19 @@ let main args =
         match Cli.runApp args with
         | Some cmd ->
             match cmd with
-            | Cli.Search query -> Cli.install query
-            | Cli.Install apps -> Cli.install apps
-            | Cli.Uninstall apps -> Cli.uninstall apps
-            | Cli.List -> Cli.list
-            | Cli.Version -> printfn "v0.1.0"
+            | Cli.Search query -> Commands.search query
+            | Cli.Install apps -> Commands.install apps
+            | Cli.Uninstall apps -> Commands.uninstall apps
+            | Cli.List -> Commands.list ()
+            | Cli.Version -> Commands.version ()
         | None -> exit 1
 
         initApp ()
 
         getData ()
     with
-    | err -> eprintfn $"{err.Message}"
+    | err ->
+        eprintfn $"{err.Message}"
+        exit 1
 
     0

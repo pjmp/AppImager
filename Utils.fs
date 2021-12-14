@@ -4,6 +4,7 @@ open System
 open System.IO
 
 let AppDirectory =
+    // use this: Environment.SpecialFolder.Personal
     Path.Join(Environment.GetEnvironmentVariable("HOME"), ".AppImager")
 
 let AppDBDirectory = Path.Join(AppDirectory, "cache")
