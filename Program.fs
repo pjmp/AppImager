@@ -35,11 +35,11 @@ let main args =
         match Cli.runApp args with
         | Some cmd ->
             match cmd with
-            | Cli.Search query -> Commands.search query
-            | Cli.Install apps -> Commands.install apps
-            | Cli.Uninstall apps -> Commands.uninstall apps
-            | Cli.List -> Commands.list ()
-            | Cli.Version -> Commands.version ()
+            | Cli.Search query -> Commands.Search query
+            | Cli.Install apps -> Commands.Install apps
+            | Cli.Uninstall apps -> Commands.Uninstall apps
+            | Cli.ListApps -> Commands.ListApps()
+            | Cli.Version -> Commands.Version()
         | None -> exit 1
 
         initApp ()
@@ -47,7 +47,9 @@ let main args =
         getData ()
     with
     | err ->
+        Console.ForegroundColor <- ConsoleColor.DarkRed
         eprintfn $"{err.Message}"
+        Console.ResetColor()
         exit 1
 
     0

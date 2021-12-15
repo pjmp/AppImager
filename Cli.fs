@@ -6,8 +6,8 @@ open Argu
 
 [<NoAppSettings>]
 type Arguments =
-    | [<AltCommandLine("-l"); Unique>] List
     | [<AltCommandLine("-v"); Unique>] Version
+    | [<AltCommandLine("-l"); Unique>] ListApps
     | [<AltCommandLine("-i"); Unique>] Install of List<string>
     | [<AltCommandLine("-u"); Unique>] Uninstall of List<string>
     | [<AltCommandLine("-s"); EqualsAssignmentOrSpaced; Unique>] Search of string
@@ -15,7 +15,7 @@ type Arguments =
     interface IArgParserTemplate with
         member this.Usage =
             match this with
-            | List -> "list installed AppImages."
+            | ListApps -> "list installed AppImages."
             | Version -> "displays version information."
             | Install _ -> "install the app."
             | Uninstall _ -> "uninstall the given app."
