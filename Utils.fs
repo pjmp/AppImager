@@ -11,5 +11,4 @@ let AppDBDirectory = Path.Join(AppDirectory, "cache")
 
 let AppBinDirectory = Path.Join(AppDirectory, "bin")
 
-let AppDBFile =
-    Path.Join(AppDirectory, "cache", "db.json")
+let AppDBFile = Path.Join(AppDirectory, "cache", "db.json")

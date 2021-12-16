@@ -16,7 +16,7 @@ type Item =
       categories: List<string>
       authors: Option<List<Author>>
       license: Option<string>
-      links: List<Link> }
+      links: Option<List<Link>> }
 
 let Uninstall apps =
     let total =
@@ -72,11 +72,17 @@ let Search (query: string) =
     let matching =
         List.filter (fun item -> item.name.Contains(query, StringComparison.CurrentCultureIgnoreCase)) db.items
 
+    if matching.IsEmpty then
+        eprintfn "No matches found for: %s" query
+        exit 1
+
     let headers =
         [ "Name"
           "Authors"
           "Categories"
-          "Description" ]
+          "License"
+          "Description"
+          "Website" ]
 
     let rows =
         matching
@@ -89,20 +95,40 @@ let Search (query: string) =
                     |> String.concat ", "
                 | None -> "-"
 
-            let categories =
-                item.categories
-                |> List.map (fun category -> category)
-                |> String.concat ", "
+            let categories = item.categories |> String.concat ", "
 
             let description =
                 match item.description with
-                | Some description -> if description.Length >= 40 then $"{description[..40]}...." else description
+                | Some description ->
+                    if description.Length >= 40 then
+                        $"{description[..40]}..."
+                    else
+                        description
+                | None -> "-"
+
+            let license =
+                match item.license with
+                | Some license -> license
+                | None -> "-"
+
+            let website =
+                match item.links with
+                | Some links ->
+                    match links
+                          // since this api only has project's GitHub repository
+                          // that provides meaningful homepage
+                          |> List.tryFind (fun link -> link.``type`` = "GitHub")
+                        with
+                    | Some link -> $"https://github.com/{link.url}"
+                    | None -> "-"
                 | None -> "-"
 
             [ item.name
               authors
               categories
-              description ])
+              license
+              description
+              website ])
 
     prettyTable rows
     |> withHeaders headers

@@ -36,8 +36,7 @@ let runApp argv =
             helpTextMessage = "Tiny cli to manage AppImage packaged apps"
         )
 
-    let results =
-        parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
+    let results = parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
 
     let cmd = results.GetAllResults()
 

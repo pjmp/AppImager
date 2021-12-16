@@ -49,6 +49,11 @@ let main args =
     | err ->
         Console.ForegroundColor <- ConsoleColor.DarkRed
         eprintfn $"{err.Message}"
+
+#if DEBUG
+        eprintfn $"{err.StackTrace}"
+#endif
+
         Console.ResetColor()
         exit 1
 
