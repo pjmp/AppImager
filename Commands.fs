@@ -33,18 +33,13 @@ let Uninstall apps =
                 {| acc with
                     NotExist = curr :: acc.NotExist |})
 
-    let mutable exitCode = 0
-
     if not total.NotRemoved.IsEmpty then
-        eprintfn $"""Unable to remove "{total.NotRemoved |> String.concat ", "}"."""
-        exitCode <- 1
+        failwith $"""Unable to remove "{total.NotRemoved |> String.concat ", "}"."""
 
     if not total.NotExist.IsEmpty then
-        eprintfn $"""Unable to remove "{total.NotExist |> String.concat ", "}", package not installed."""
+        failwith $"""Unable to remove "{total.NotExist |> String.concat ", "}", package not installed."""
 
-        exitCode <- 1
-
-    exit exitCode
+    exit 0
 
 let ListApps () =
     let rows =
@@ -55,11 +50,9 @@ let ListApps () =
 
     Utils.PrettyPrint [ "Installed Date"; "Packages" ] rows
 
-let private download (url: string, file: string) =
-    printfn "download %A" url
-
+let private downloadAndInstall (url: string, file: string) =
     Spinner.StartAsync(
-        "Starting...",
+        "Initializing",
         (fun (spinner: Spinner) ->
             task {
                 let timer = new Diagnostics.Stopwatch()
@@ -71,7 +64,7 @@ let private download (url: string, file: string) =
                     Thanks https://github.com/SpaceMonkeyForever for this
                     https://github.com/dotnet/runtime/issues/23697#issuecomment-361018812
                 *)
-                spinner.Text <- "Starting..."
+                spinner.Text <- "Setting up HTTP client"
                 use request = new HttpRequestMessage(HttpMethod.Get, url)
 
                 use handler = new HttpClientHandler()
@@ -82,17 +75,19 @@ let private download (url: string, file: string) =
                 client.DefaultRequestHeaders.Add("Accept", "application/octet-stream")
                 client.DefaultRequestHeaders.Add("User-Agent", "FSharp/6 DotNet/6 AppImager/0.1.0")
 
-                spinner.Text <- "Making request..."
-
+                spinner.Text <- "Fetching response headers"
                 let! response = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
 
-                spinner.Text <- "Making request... 2"
+                if int(response.StatusCode) > 399 then
+                    failwith $"Server responded with error ({response.StatusCode})"
+
+                spinner.Text <- "Downloading"
                 let! response = client.GetAsync(response.Headers.Location)
 
-                spinner.Text <- "Saving..."
+                spinner.Text <- "Saving"
                 do! response.Content.CopyToAsync(File.Create(file))
 
-                spinner.Text <- "Making it executable.."
+                spinner.Text <- "Making executable"
                 Utils.Chmod file
 
                 spinner.Text <- $"Done, took {Utils.HumanizeTime timer.Elapsed}"
@@ -132,10 +127,9 @@ let Install (apps: List<string>) =
                                 |> List.filter (fun asset -> asset.name.EndsWith(".AppImage"))
 
                             if not assets.IsEmpty then
-                                download (assets.Head.url, $"{Utils.AppBinDirectory}/{assets.Head.name}")
+                                downloadAndInstall (assets.Head.url, $"{Utils.AppBinDirectory}/{assets.Head.name}")
                             else
-                                eprintfn $"No assets to download found for {app.name}"
-                                exit 1
+                                failwith $"No assets to download found for {app.name}"
 
                         }
                         |> Async.AwaitTask
@@ -150,16 +144,13 @@ let Install (apps: List<string>) =
 
                         if link.IsSome then
                             let url = link.Value.url.TrimEnd(".mirrorlist".ToCharArray())
-                            download (url, $"{Utils.AppBinDirectory}/{app.name}.AppImage")
+                            downloadAndInstall (url, $"{Utils.AppBinDirectory}/{app.name}.AppImage")
                         else
-                            eprintfn $"No link to download found for {app.name}"
-                            exit 1
+                            failwith $"No link to download found for {app.name}"
             else
-                eprintfn $"No link to download found for {app.name}"
-                exit 1
+                failwith $"No link to download found for {app.name}"
         | None ->
-            eprintfn $"""{apps |> String.concat ", "}, not found in DB, try refreshing and try again."""
-            exit 1
+            failwith $"""{apps |> String.concat ", "}, not found in DB, try refreshing and try again."""
 
 let Search (query: string) =
     let matching =
@@ -168,8 +159,7 @@ let Search (query: string) =
             (Utils.GetDb.Force().items)
 
     if matching.IsEmpty then
-        eprintfn "No matches found for: %s" query
-        exit 1
+        failwith $"No matches found for: {query}"
 
     let headers =
         [ "Name"

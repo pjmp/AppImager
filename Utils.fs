@@ -15,7 +15,8 @@ let AppDBDirectory = Path.Join(AppDirectory, "cache")
 
 let AppBinDirectory = Path.Join(AppDirectory, "bin")
 
-let AppDBFile = Path.Join(AppDirectory, "cache", "db.json")
+let AppDBFile =
+    Path.Join(AppDirectory, "cache", "db.json")
 
 let private CreateDirectories =
     let dirs =
@@ -38,7 +39,7 @@ let private CreateDb =
         task {
             let! response = client.GetStringAsync("https://appimage.github.io/feed.json")
 
-            File.WriteAllText(AppDBFile, response)
+            do! File.WriteAllTextAsync(AppDBFile, response)
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously
