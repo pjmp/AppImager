@@ -90,8 +90,8 @@ let private downloadAndInstall (url: string, file: string) =
                 spinner.Text <- "Making executable"
                 Utils.Chmod file
 
-                spinner.Text <- $"Done, took {Utils.HumanizeTime timer.Elapsed}"
                 timer.Stop()
+                spinner.Text <- $"Done, took {Utils.HumanizeTime timer.Elapsed}"
             })
     )
     |> Async.AwaitTask
@@ -150,7 +150,7 @@ let Install (apps: List<string>) =
             else
                 failwith $"No link to download found for {app.name}"
         | None ->
-            failwith $"""{apps |> String.concat ", "}, not found in DB, try refreshing and try again."""
+            failwith $"""{apps |> String.concat ", "}, not found in DB, refresh and try again."""
 
 let Search (query: string) =
     let matching =
