@@ -20,9 +20,10 @@
 
     <ItemGroup>
         <PackageReference Include="Argu" Version="6.1.1" />
-        <PackageReference Include="FsPrettyTable" Version="0.1.0" >
+        <PackageReference Include="FsPrettyTable" Version="0.1.0">
             <NoWarn>NU1701</NoWarn>
         </PackageReference>
+        <PackageReference Include="Kurukuru" Version="1.4.0" />
     </ItemGroup>
 
 </Project>
