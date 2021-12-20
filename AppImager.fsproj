@@ -1,33 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
+        <!-- <PackageLicenseExpression>MIT</PackageLicenseExpression> -->
+        <!-- <RuntimeIdentifier>linux-x64</RuntimeIdentifier> -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <AssemblyName>appimager</AssemblyName>
         <Authors>Pomba Magar</Authors>
-        <Description>Tiny cli to manage AppImage packaged apps in linux</Description>
         <Copyright>Copyright © Pomba Magar 2021</Copyright>
+        <Description>Tiny cli to manage AppImage packaged apps in linux</Description>
+        <Deterministic>true</Deterministic>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
         <OutputType>Exe</OutputType>
         <PackageId>AppImager</PackageId>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageProjectUrl>https://github.com/pjmp/AppImager</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>console linux AppImage</PackageTags>
         <PackAsTool>true</PackAsTool>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <RepositoryUrl>https://github.com/pjmp/AppImager</RepositoryUrl>
         <RespositoryType>git</RespositoryType>
         <RootNamespace>AppImager</RootNamespace>
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
         <Summary>Tiny cli to manage AppImage packaged apps in linux</Summary>
-        <NeutralLanguage>en-US</NeutralLanguage>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <TargetFramework>net6.0</TargetFramework>
-        <Version>0.2.0</Version>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>0.3.0</Version>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="LICENSE" Pack="true" PackagePath="." />
+        <None Include="README.md" Pack="true" PackagePath="." />
+    </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Utils.fs" />
-        <Compile Include="Commands.fs" />
-        <Compile Include="Cli.fs" />
-        <Compile Include="Program.fs" />
+        <Compile Include="src/Utils.fs" />
+        <Compile Include="src/Commands.fs" />
+        <Compile Include="src/Cli.fs" />
+        <Compile Include="src/Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,5 +48,4 @@
         </PackageReference>
         <PackageReference Include="Kurukuru" Version="1.4.0" />
     </ItemGroup>
-
 </Project>
