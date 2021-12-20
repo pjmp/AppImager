@@ -78,3 +78,12 @@ let Chmod file =
         .WaitForExitAsync()
     |> Async.AwaitTask
     |> Async.RunSynchronously
+
+let AppNameVersion () =
+    let info =
+        Reflection
+            .Assembly
+            .GetExecutingAssembly()
+            .GetName()
+
+    (info.Name, info.Version)

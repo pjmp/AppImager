@@ -1,14 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Authors>Pomba Magar</Authors>
+        <Description>Tiny cli to manage AppImage packaged apps in linux</Description>
+        <Copyright>Copyright © Pomba Magar 2021</Copyright>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>AppImager</RootNamespace>
         <PackageId>AppImager</PackageId>
-        <Version>0.1.0</Version>
-        <Authors>pmagar</Authors>
-        <Description>Tiny cli to manage AppImage packaged apps</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/pjmp/AppImager</PackageProjectUrl>
+        <PackageTags>console linux AppImage</PackageTags>
+        <PackAsTool>true</PackAsTool>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <RepositoryUrl>https://github.com/pjmp/AppImager</RepositoryUrl>
+        <RespositoryType>git</RespositoryType>
+        <RootNamespace>AppImager</RootNamespace>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+        <Summary>Tiny cli to manage AppImage packaged apps in linux</Summary>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <TargetFramework>net6.0</TargetFramework>
+        <Version>0.2.0</Version>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>

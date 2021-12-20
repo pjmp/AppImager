@@ -13,6 +13,7 @@ let main args =
             | Cli.Uninstall apps -> Commands.Uninstall apps
             | Cli.ListApps -> Commands.ListApps()
             | Cli.Version -> Commands.Version()
+        // | Cli.Refresh -> printfn "need to refresh"
         | None -> exit 1
 
         Utils.Init()

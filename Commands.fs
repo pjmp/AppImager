@@ -219,4 +219,6 @@ let Search (query: string) =
 
     exit 0
 
-let Version () = printfn "v0.1.0"
+let Version () =
+    let (name, version) = Utils.AppNameVersion()
+    printfn "%s v%A" name version
